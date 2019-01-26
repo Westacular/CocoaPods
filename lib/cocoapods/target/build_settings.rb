@@ -629,7 +629,7 @@ module Pod
 
           libraries = []
           if non_library_xcconfig? || target.build_as_dynamic?
-            libraries.concat vendored_static_frameworks.map { |l| File.basename(l, '.framework') }
+            libraries.concat vendored_static_libraries.map { |l| File.basename(l, l.extname).sub(/\Alib/, '') }
             libraries.concat libraries_to_import
           end
           if non_library_xcconfig?
