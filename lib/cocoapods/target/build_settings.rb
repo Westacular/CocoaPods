@@ -630,7 +630,7 @@ module Pod
         #
         # @return [Array<String>]
         #
-        def extract_linking_names(libraries)
+        def linker_names_from_libraries(libraries)
           libraries.map { |l| File.basename(l, l.extname).sub(/\Alib/, '') }
         end
 
@@ -640,7 +640,7 @@ module Pod
 
           libraries = []
           if non_library_xcconfig? || target.build_as_dynamic?
-            libraries.concat extract_linking_names(vendored_static_libraries)
+            libraries.concat linker_names_from_libraries(vendored_static_libraries)
             libraries.concat libraries_to_import
           end
           if non_library_xcconfig?
@@ -653,14 +653,14 @@ module Pod
         # @return [Array<String>]
         define_build_settings_method :static_libraries_to_import, :memoized => true do
           static_libraries_to_import = []
-          static_libraries_to_import.concat extract_linking_names(vendored_static_libraries) unless target.should_build? && target.build_as_dynamic?
+          static_libraries_to_import.concat linker_names_from_libraries(vendored_static_libraries) unless target.should_build? && target.build_as_dynamic?
           static_libraries_to_import << target.product_basename if target.should_build? && target.build_as_static_library?
           static_libraries_to_import
         end
 
         # @return [Array<String>]
         define_build_settings_method :dynamic_libraries_to_import, :memoized => true do
-          dynamic_libraries_to_import = extract_linking_names(vendored_dynamic_libraries)
+          dynamic_libraries_to_import = linker_names_from_libraries(vendored_dynamic_libraries)
           dynamic_libraries_to_import.concat spec_consumers.flat_map(&:libraries)
           dynamic_libraries_to_import << target.product_basename if target.should_build? && target.build_as_dynamic_library?
           dynamic_libraries_to_import
